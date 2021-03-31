@@ -7,12 +7,69 @@ class Weather extends Equatable {
   final double temp;
   final double maxTemp;
   final int locationId;
-  final String creatd;
+  final String created;
   final DateTime lasUpdated;
   final String location;
+
+  const Weather(
+      {this.weatherCondition,
+      this.formattedCondition,
+      this.minTemp,
+      this.temp,
+      this.maxTemp,
+      this.locationId,
+      this.created,
+      this.lasUpdated,
+      this.location});
+
+  @override
+  List<Object> get props => [
+        this.weatherCondition,
+        this.formattedCondition,
+        this.minTemp,
+        this.temp,
+        this.maxTemp,
+        this.locationId,
+        this.created,
+        this.lasUpdated,
+        this.location
+      ];
+
+  factory Weather.fromJson(dynamic jsonObject) {
+    final consolidatedWeather = jsonObject['consolidated_weather'][0];
+    return Weather(
+        weatherCondition: mapStringToWeatherCondition(
+                consolidatedWeather['weather_state_abbr']) ??
+            '',
+        formattedCondition: consolidatedWeather['weather_state_name'] ?? '',
+        minTemp: consolidatedWeather['min_temp'] as double,
+        temp: consolidatedWeather['the_temp'] as double,
+        maxTemp: consolidatedWeather['max_temp'] as double,
+        locationId: jsonObject['woeid'] as int,
+        created: consolidatedWeather['created'],
+        lasUpdated: DateTime.now(),
+        location: jsonObject(['title']));
+  }
+
+  static WeatherCondition mapStringToWeatherCondition(String inputString) {
+    Map<String, WeatherCondition> map = {
+      'sn': WeatherCondition.snow,
+      'sl': WeatherCondition.sleet,
+      'h': WeatherCondition.hail,
+      't': WeatherCondition.thunderstorm,
+      'hr': WeatherCondition.heavyRain,
+      'lr': WeatherCondition.lightRain,
+      's': WeatherCondition.showers,
+      'hc': WeatherCondition.heavyCloud,
+      'lc': WeatherCondition.lightCloud,
+      'c': WeatherCondition.clear,
+    };
+
+    return map[inputString] ?? WeatherCondition.unknown;
+  }
 }
 
-enum WeatherCondition{
+enum WeatherCondition {
   snow,
   sleet,
   hail,
@@ -25,21 +82,3 @@ enum WeatherCondition{
   clear,
   unknown,
 }
-
-/*{
-         "id":4954766934278144,
-         "weather_state_name":"Light Cloud",
-         "weather_state_abbr":"lc",
-         "wind_direction_compass":"S",
-         "created":"2021-03-31T00:31:02.909127Z",
-         "applicable_date":"2021-03-31",
-         "min_temp":9.83,
-         "max_temp":21.875,
-         "the_temp":22.255,
-         "wind_speed":3.966200349661974,
-         "wind_direction":171.7784099653297,
-         "air_pressure":1024.0,
-         "humidity":50,
-         "visibility":8.408084287759484,
-         "predictability":70
-      }*/
