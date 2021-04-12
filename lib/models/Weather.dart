@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:equatable/equatable.dart';
 
 class Weather extends Equatable {
@@ -48,7 +50,7 @@ class Weather extends Equatable {
         locationId: jsonObject['woeid'] as int,
         created: consolidatedWeather['created'],
         lasUpdated: DateTime.now(),
-        location: jsonObject(['title']));
+        location: jsonObject['title']);
   }
 
   static WeatherCondition mapStringToWeatherCondition(String inputString) {
